@@ -7,6 +7,7 @@ public class Word {
     private List<String> meanings;
     private List<String> ant;
     private List<String> syn;
+    private String origin;
 
     public String getWord() {
         return word;
@@ -32,4 +33,11 @@ public class Word {
     public void setMeanings(List<String> meanings) {
         this.meanings = meanings;
     }
+	public String getOrigin() {
+		return origin;
+	}
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+    
 }

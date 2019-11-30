@@ -1,25 +1,32 @@
 package org.learn.english.solr;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
+import org.learn.english.models.GWord;
 import org.learn.english.models.Word;
 import org.learn.english.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 @Service
 public class SolrIndexHelper {
@@ -30,8 +37,10 @@ public class SolrIndexHelper {
 
 	public void indexWebsterDictonary() {
 		try {
-			Optional<String> webSterData = FileUtil.readFileAsString(FileUtil.DIR+"Latest\\VenuDict.json");
+			Optional<String> webSterData = FileUtil.readFileAsString(FileUtil.DIR+"VenuDict.json");
 			if(webSterData.isPresent()){
+				Map<String, String> orginMap = loadGdictionary();
+				
 				Word[] words = gson.fromJson(webSterData.get(), Word[].class);
 				List<SolrInputDocument> docs=new ArrayList<SolrInputDocument>();
 				Arrays.asList(words).stream().forEach(word->{
@@ -52,13 +61,32 @@ public class SolrIndexHelper {
 					}
 					doc.addField("type", "Dictionary");
 					char charAt = word.getWord().trim().charAt(0);
+					doc.addField("alphabet", charAt);
+					String origin = orginMap.get(word.getWord());
+					
+					if (Objects.nonNull(origin)) {
+						doc.addField("origin", origin);
+						word.setOrigin(origin);
+					}
 					docs.add(doc);
+					if(docs.size()>=5000) {
+						try {
+							httpSolrClient.add(docs);
+							docs.clear();
+						} catch (SolrServerException | IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						
+					}
+					
 				});
 				System.out.println("No of documents indexed ::"+docs.size());
 				httpSolrClient.add(docs);
 				httpSolrClient.commit();
 				httpSolrClient.close();
-				org.testng.reporters.Files.writeFile(gson.toJson(words),new File(FileUtil.DIR+"Generated\\VenuDict.json"));
+				FileUtil.writeData(gson.toJson(words), FileUtil.DIR+"Generated//VenuDict.json");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -66,6 +94,33 @@ public class SolrIndexHelper {
 	}
 
 
+	  public Map<String,String> loadGdictionary() throws IOException{
+	        Optional<String> googleData = FileUtil.readFileAsString(FileUtil.DIR+"GoogleDict1.json");
+	        Map<String,String> originMap=new HashMap<>();
+	        if(googleData.isPresent()){
+	        	
+	            GWord[] words = gson.fromJson(googleData.get(), GWord[].class);
+	           long count= Arrays.asList(words).stream().filter(gWord -> Objects.nonNull(gWord.getOrigin())).count();
+
+	            Arrays.asList(words).stream().filter(gWord -> Objects.nonNull(gWord.getOrigin())).forEach(gWord ->{
+	               System.out.println(gWord.getWord()+"------"+gWord.getOrigin().replace("?","'"));
+	                originMap.put(StringUtils.lowerCase(gWord.getWord()), gWord.getOrigin().replace("?","'"));
+	            });
+	            System.out.println("size "+count);
+	            
+	           // Files.writeFile(gson.toJson(originMap),new File(FileUtil.DIR + "origins.json"));
+	        }
+	        
+	       return originMap;
+
+	        }
+	
+	
+	
+	
+	
+	
+	
 
 
 	public void mergeNew() throws IOException {
@@ -101,10 +156,10 @@ public class SolrIndexHelper {
 				}
 				return word;
 			}).collect(Collectors.toList());
-			org.testng.reporters.Files.writeFile(gson.toJson(updatedList),new File(FileUtil.DIR+"Generated\\VenuDict.json"));
+			
+			FileUtil.writeData(gson.toJson(gson.toJson(updatedList)), FileUtil.DIR+"Generated\\VenuDict.json");
 			System.out.println("Remained size ::"+synAntMap.values().size());
-			org.testng.reporters.Files.writeFile(gson.toJson(synAntMap.values()),new File(FileUtil.DIR+"Generated\\remainedAntsSyns.json"));
-
+			FileUtil.writeData(gson.toJson(synAntMap.values()), FileUtil.DIR+"Generated\\remainedAntsSyns.json");
 		}
 	}
 
@@ -187,38 +242,33 @@ public class SolrIndexHelper {
 			}
 				i++;
 		}
-
 		System.out.println("Words size : :: "+words.size());
-		org.testng.reporters.Files.writeFile(gson.toJson(words),new File(FileUtil.DIR+"Dicts\\newAntsSyns.json"));
-
-
+		FileUtil.writeData(gson.toJson(words), FileUtil.DIR+"Dicts\\newAntsSyns.json");
 	}
 
 	private  String cleanWord(String str){
-		       str=str.replace(".","").trim();
-		return  str;
-	}
+	       str=str.replace(".","").trim();
+	return  str;
+}
 
 
 	public void exportDictionary(){
 		try {
 			SolrQuery solrQuery=new SolrQuery();
-			solrQuery.setQuery("type:Dictionary");
+			solrQuery.setQuery("-origin:*");
 			solrQuery.setFields("word");
 			solrQuery.setRows(102217);
 			QueryResponse response = httpSolrClient.query(solrQuery);
-			Set<String> webSterWordsList = response.getResults().stream().map(doc -> {
+			List<String> webSterWordsList = response.getResults().stream().map(doc -> {
 				String word = (String) doc.getFirstValue("word");
 				return word;
-			}).collect(Collectors.toSet());
-
-			org.testng.reporters.Files.writeFile(gson.toJson(webSterWordsList),new File("./words/words.json"));
-
+			}).collect(Collectors.toList());
+			
+			Collections.sort(webSterWordsList);
+			FileUtil.writeData(gson.toJson(webSterWordsList), FileUtil.DIR+"nonRoots.json");
+			httpSolrClient.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-
-
 }

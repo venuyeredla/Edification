@@ -1,7 +1,37 @@
 package org.learn.english.nlp;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.learn.english.models.Word;
+import org.learn.english.util.FileUtil;
+
 import com.google.gson.Gson;
-import edu.stanford.nlp.ling.*;
+
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.SentenceUtils;
+import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -9,32 +39,18 @@ import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
-import edu.stanford.nlp.simple.Sentence;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.util.CoreMap;
-import org.learn.english.models.Word;
-import org.learn.english.util.FileUtil;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class StanfordNLPUtil {
 
     Gson gson=new Gson();
-
     public void getLemmas(){
           Properties props = new Properties();
           props.setProperty("annotators", "tokenize,ssplit,pos,lemma");
           StanfordCoreNLP pipeline=new StanfordCoreNLP(props);
           List<String> lemmas = new LinkedList<String>();
-        MaxentTagger tagger = new MaxentTagger("C:\\work\\Jars\\corrnlp\\edu\\stanford\\nlp\\models\\pos-tagger\\english-caseless-left3words-distsim.tagger");
-          // create an empty Annotation just with the given text
-          Annotation document = new Annotation("egress");
-          // run all Annotators on this text
+          Annotation document = new Annotation("Barack Obama was born in Hawaii.");
           pipeline.annotate(document);
           // Iterate over all of the sentences found
           List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
@@ -45,9 +61,7 @@ public class StanfordNLPUtil {
                   lemmas.add(token.get(CoreAnnotations.LemmaAnnotation.class));
               }
           }
-
         lemmas.stream().forEach(s->System.out.println(s));
-
       }
 
 

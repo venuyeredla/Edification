@@ -6,8 +6,6 @@ public class GWord {
     private String word;
     private String phonetic;
     private String origin;
-    private GDefinition meanings;
-
     private Map<String,Object> meaning;
 
     public String getWord() {

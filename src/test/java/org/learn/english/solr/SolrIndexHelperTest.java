@@ -20,20 +20,26 @@ public class SolrIndexHelperTest {
    private SolrIndexHelper solrHelper;
 
 	@Test
+	@Ignore
 	public void indexWebsterTest() {
 		solrHelper.indexWebsterDictonary();
 	}
+	
+	
+	@Test
+	public void expportDictTest() {
+		solrHelper.exportDictionary();
+	}
+	
 	@Test
 	@Ignore
 	public void indexFile() {
 		solrHelper.indexFile();
 	}
 
-
 	@Test
 	@Ignore
 	public void merge() throws IOException {
-		SolrIndexHelper dictionaryIndexer=new SolrIndexHelper();
 		//dictionaryIndexer.merge();
 		//dictionaryIndexer.readANTextFile();
 		//dictionaryIndexer.mergeNew();
@@ -41,7 +47,7 @@ public class SolrIndexHelperTest {
 
 
 	@Test
-	@Ignore
+	//@Ignore
 	public void testDeleteIndex() throws SolrServerException, IOException, URISyntaxException {
 		HttpSolrClient httpSolrClient=new HttpSolrClient.Builder("http://localhost:8983/solr/Dictionary").build();
 		httpSolrClient.deleteByQuery("type:Dictionary");

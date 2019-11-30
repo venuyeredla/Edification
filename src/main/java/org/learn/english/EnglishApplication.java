@@ -1,6 +1,6 @@
 package org.learn.english;
 
-import org.learn.english.Readers.GoogleDictionaryReader;
+import org.learn.english.readers.GoogleDictionaryReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
