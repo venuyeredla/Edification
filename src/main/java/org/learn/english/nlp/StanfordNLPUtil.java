@@ -1,13 +1,8 @@
 package org.learn.english.nlp;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.simple.Sentence;
+import org.apache.commons.lang3.StringUtils;
 import org.learn.english.models.Word;
 import org.learn.english.util.FileUtil;
 
@@ -45,6 +43,69 @@ import edu.stanford.nlp.util.CoreMap;
 public class StanfordNLPUtil {
 
     Gson gson=new Gson();
+
+    public void tokenizeText(){
+        try {
+            // set up pipeline properties
+            Properties props = new Properties();
+            props.setProperty("annotators", "tokenize,ssplit");
+            // set up pipeline
+            StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+            Set<String> tokens=new HashSet<>();
+            System.out.println("---");
+            System.out.println("Accessing Tokens In A CoreDocument");
+            System.out.println("(text, char offset begin, char offset end)");
+            Files.list(Paths.get(FileUtil.DIR + "twoAndHalf")).forEach(path->{
+                String fileName = path.toFile().getAbsolutePath();
+                System.out.println("Reading file"+fileName);
+                Optional<String> data = FileUtil.readFileAsString(fileName);
+                if(data.isPresent()){
+                    // the following has examples for the new Core Wrapper API and the older Annotation API
+                    // example using Core Wrappers (new API designed to make it easier to work with NLP data)
+                    CoreDocument exampleDocument = new CoreDocument(data.get());
+                    // annotate document
+                    pipeline.annotate(exampleDocument);
+                    // access tokens from a CoreDocument
+                    // a token is represented by a CoreLabel
+                    List<CoreSentence> sentences = exampleDocument.sentences();
+                    // this for loop will print out all of the tokens and the character offset info
+                    sentences.stream().forEach(sentence->{
+                        for (CoreLabel token : sentence.tokens()) {
+                            // System.out.println(token.word() + "\t" + token.beginPosition() + "\t" + token.endPosition());
+                            //   System.out.println(token.word() + "\t" + token.beginPosition() + "\t" + token.endPosition());
+                            if(token.word().length()>2){
+                                tokens.add(StringUtils.lowerCase(token.word()));
+                            }
+
+                        }
+                    });
+                    // example using older Annotation API
+         /*            System.out.println("---");
+                    System.out.println("Accessing Tokens In An Annotation");
+                    System.out.println("(text, char offset begin, char offset end)");
+                    Annotation exampleAnnotation = new Annotation("Here is the text to tokenize.");
+                    pipeline.annotate(exampleAnnotation);
+                    CoreMap firstSentence = exampleAnnotation.get(CoreAnnotations.SentencesAnnotation.class).get(0);
+                    // this for loop will print out all of the tokens and the character offset info
+           for (CoreLabel token : firstSentence.get(CoreAnnotations.TokensAnnotation.class)) {
+                System.out.println(token.word() + "\t" + token.beginPosition() + "\t" + token.endPosition());
+            }*/
+                }
+            });
+            System.out.println("Tokens size ::"+tokens.size());
+            tokens.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
     public void getLemmas(){
           Properties props = new Properties();
           props.setProperty("annotators", "tokenize,ssplit,pos,lemma");

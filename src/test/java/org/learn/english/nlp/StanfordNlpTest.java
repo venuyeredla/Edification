@@ -6,6 +6,7 @@ import org.junit.Test;
 public class StanfordNlpTest {
 
     @Test
+    @Ignore
     public void test(){
         StanfordNLPUtil nlpUtil =  new StanfordNLPUtil() ;
         // stanfordNLPUtil.posTagging("C:\\Work\\Books\\Vocabulary\\PrideAndPrejudice.txt");
@@ -13,6 +14,14 @@ public class StanfordNlpTest {
         nlpUtil.getLemmas();
 
     }
+
+    @Test
+    public void tokenizeText(){
+        StanfordNLPUtil nlpUtil =  new StanfordNLPUtil() ;
+        nlpUtil.tokenizeText();
+
+    }
+
 
     @Test
     @Ignore

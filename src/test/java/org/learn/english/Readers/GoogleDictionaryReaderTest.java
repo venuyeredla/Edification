@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.learn.english.config.EnglishTestConfig;
 import org.learn.english.models.GWord;
-import org.learn.english.readers.GoogleDictionaryReader;
+import org.learn.english.readers.GDictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,17 +23,17 @@ import java.nio.file.Paths;
 public class GoogleDictionaryReaderTest {
 
     @Autowired
-    private GoogleDictionaryReader googleDictionaryReader;
+    private GDictionary gDictionary;
 
     @Test
     @Ignore
     public void testGooglReader(){
-        googleDictionaryReader.exportGoogleDict();
+        gDictionary.exportGoogleDict();
     }
     @Test
     public void printGDict() throws IOException{
 
-        googleDictionaryReader.loadGdictionary();
+        gDictionary.loadGdictionary();
     }
 
     @Test

@@ -48,6 +48,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp-model</artifactId>
+			<systemPath>C:/work/Jars/corrnlp/stanford-english-corenlp-models-current.jar</systemPath>
+
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
@@ -59,8 +66,14 @@
 			    <artifactId>jsoup</artifactId>
 			    <version>1.8.3</version>
 			</dependency>
-			
-		
+
+		<!-- https://mvnrepository.com/artifact/org.dizitart/nitrite -->
+		<dependency>
+			<groupId>org.dizitart</groupId>
+			<artifactId>nitrite</artifactId>
+			<version>3.3.0</version>
+		</dependency>
+
 
 
 		<dependency>

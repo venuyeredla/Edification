@@ -1,8 +1,13 @@
 package org.learn.english.models;
 
+import org.dizitart.no2.objects.Id;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class Word {
+public class Word implements Serializable {
+
+    @Id
     private  String word;
     private List<String> meanings;
     private List<String> ant;
