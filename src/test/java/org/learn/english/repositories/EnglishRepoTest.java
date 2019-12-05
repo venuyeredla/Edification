@@ -1,5 +1,9 @@
 package org.learn.english.repositories;
 
+import org.dizitart.no2.Document;
+import org.dizitart.no2.Nitrite;
+import org.dizitart.no2.NitriteCollection;
+import org.dizitart.no2.objects.ObjectRepository;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,9 +52,32 @@ public class EnglishRepoTest {
     }
 
     @Test
+    @Ignore
     public void testGetStopwords(){
         Set<String> stopWords = englishRepository.getStopWords();
         LOGGER.info("No of stop words = {}",stopWords.size());
         stopWords.forEach(System.out::println);
+    }
+
+    @Test
+    @Ignore
+    public void copyDB(){
+        List<Word> words = englishRepository.readDictionary();
+        Set<String> stopWords = englishRepository.getStopWords();
+        Nitrite newNitriteDB = Nitrite.builder()
+                .compressed()
+                .filePath("data/english.db")
+                .openOrCreate("english", "english");
+        ObjectRepository<Word> newDictRepo = newNitriteDB.getRepository(Word.class);
+        NitriteCollection newStopWordsCollection = newNitriteDB.getCollection("stopwords");
+
+        Word[] wordsArray=new Word[words.size()];
+        words.toArray(wordsArray);
+        newDictRepo.insert(wordsArray);
+        stopWords.stream().forEach(word->{
+            newStopWordsCollection.insert(Document.createDocument("key",word));
+        });
+        newNitriteDB.commit();
+        newNitriteDB.close();
     }
 }

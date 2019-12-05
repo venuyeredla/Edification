@@ -51,7 +51,6 @@ public class EnglishRepository {
          List<Word> words=new ArrayList<>();
         for(Word word:dictCursor){
             words.add(word);
-            System.out.println(word.getWord());
         }
         LOGGER.info("No of words in dictionary :: {}",words.size());
         return words;
@@ -96,5 +95,4 @@ public class EnglishRepository {
         }
         return stopWords;
     }
-
 }

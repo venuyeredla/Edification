@@ -25,7 +25,7 @@ public class EnglishConfig {
     public Nitrite nitriteDb(){
         Nitrite nitriteDB = Nitrite.builder()
                 .compressed()
-                .filePath("data/eng.db")
+                .filePath("data/english.db")
                 .openOrCreate("english", "english");
         return nitriteDB;
     }
