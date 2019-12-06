@@ -28,6 +28,8 @@ public class EnglishRepoTest {
 
     @Autowired
     EnglishRepository englishRepository;
+    @Autowired
+    StopWordsRepository stopWordsRepository;
 
     @Test
     @Ignore
@@ -44,26 +46,12 @@ public class EnglishRepoTest {
         originsMap.forEach((k,v)->{ System.out.println(k+" --> "+v);});
     }
 
-    @Test
-    @Ignore
-    public void testSaveStopwords(){
-        Set<String> stopWords = FileUtil.loadStopWords();
-        englishRepository.saveAllStopWords(stopWords);
-    }
-
-    @Test
-    @Ignore
-    public void testGetStopwords(){
-        Set<String> stopWords = englishRepository.getStopWords();
-        LOGGER.info("No of stop words = {}",stopWords.size());
-        stopWords.forEach(System.out::println);
-    }
 
     @Test
     @Ignore
     public void copyDB(){
         List<Word> words = englishRepository.readDictionary();
-        Set<String> stopWords = englishRepository.getStopWords();
+        Set<String> stopWords = stopWordsRepository.getStopWords();
         Nitrite newNitriteDB = Nitrite.builder()
                 .compressed()
                 .filePath("data/english.db")

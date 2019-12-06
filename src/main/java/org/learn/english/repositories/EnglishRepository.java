@@ -23,9 +23,7 @@ public class EnglishRepository {
     @Autowired
     ObjectRepository<Word> dictRepository;
 
-    @Autowired
-    @Qualifier("stopWordsCollection")
-    NitriteCollection stopWordsCollection;
+
 
     @Autowired
     @Qualifier("originWordsCollection")
@@ -73,26 +71,5 @@ public class EnglishRepository {
        // repository.insert(englishDic);
     }
 
-    public void cleanSaveAllStopWords(Set<String> stopWords){
-        stopWordsCollection.remove(Filters.ALL);
-        stopWords.stream().forEach(word->{
-            stopWordsCollection.insert(Document.createDocument("key",word));
-        });
-    }
 
-    public void saveAllStopWords(Set<String> stopWords){
-        stopWords.stream().forEach(word->{
-            stopWordsCollection.insert(Document.createDocument("key",word));
-        });
-    }
-
-    public Set<String> getStopWords(){
-        org.dizitart.no2.Cursor stopWordsCursor = stopWordsCollection.find();
-        Set<String> stopWords=new HashSet<>();
-        for (Document d:stopWordsCursor){
-            String key = (String)d.get("key");
-            stopWords.add(key);
-        }
-        return stopWords;
-    }
 }

@@ -20,7 +20,10 @@ import java.util.stream.Stream;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.simple.Sentence;
 import org.apache.commons.lang3.StringUtils;
+import org.dizitart.no2.NitriteCollection;
 import org.learn.english.models.Word;
+import org.learn.english.repositories.EnglishRepository;
+import org.learn.english.repositories.StopWordsRepository;
 import org.learn.english.util.FileUtil;
 
 import com.google.gson.Gson;
@@ -39,8 +42,15 @@ import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.stanford.nlp.util.CoreMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StanfordNLPUtil {
+
+    @Autowired
+    StopWordsRepository stopWordsRepository;
 
     Gson gson=new Gson();
 
@@ -55,6 +65,7 @@ public class StanfordNLPUtil {
             System.out.println("---");
             System.out.println("Accessing Tokens In A CoreDocument");
             System.out.println("(text, char offset begin, char offset end)");
+            Set<String> stopWords = stopWordsRepository.getStopWords();
             Files.list(Paths.get(FileUtil.DIR + "twoAndHalf")).forEach(path->{
                 String fileName = path.toFile().getAbsolutePath();
                 System.out.println("Reading file"+fileName);
@@ -74,9 +85,11 @@ public class StanfordNLPUtil {
                             // System.out.println(token.word() + "\t" + token.beginPosition() + "\t" + token.endPosition());
                             //   System.out.println(token.word() + "\t" + token.beginPosition() + "\t" + token.endPosition());
                             if(token.word().length()>2){
-                                tokens.add(StringUtils.lowerCase(token.word()));
+                                String word = StringUtils.lowerCase(token.word());
+                                if(!stopWords.contains(word)){
+                                    tokens.add(word);
+                                }
                             }
-
                         }
                     });
                     // example using older Annotation API
