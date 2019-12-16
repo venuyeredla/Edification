@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.learn.english.config.EnglishTestConfig;
 import org.learn.english.models.Word;
+import org.learn.english.solr.DictionaryIndexer;
 import org.learn.english.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,11 @@ public class EnglishRepoTest {
     EnglishRepository englishRepository;
     @Autowired
     StopWordsRepository stopWordsRepository;
+    @Autowired
+    OriginReposiotry originReposiotry;
+
+    @Autowired
+    DictionaryIndexer dictionaryIndexer;
 
     @Test
     @Ignore
@@ -40,12 +46,11 @@ public class EnglishRepoTest {
     }
 
     @Test
-    @Ignore
-    public void testOrigins(){
-        Map<String, String> originsMap = englishRepository.getOrigins();
-        originsMap.forEach((k,v)->{ System.out.println(k+" --> "+v);});
+    public void testUpdateOriginsAndIndex(){
+        Map<String, String> origins = originReposiotry.getOrigins();
+        List<Word> tobeIndexed = englishRepository.updateOrigins(origins);
+        dictionaryIndexer.indexDictionary(tobeIndexed);
     }
-
 
     @Test
     @Ignore

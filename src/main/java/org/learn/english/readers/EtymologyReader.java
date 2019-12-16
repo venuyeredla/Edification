@@ -1,11 +1,12 @@
 package org.learn.english.readers;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.lang3.StringUtils;
+import org.dizitart.no2.Document;
 import org.dizitart.no2.NitriteCollection;
 import org.learn.english.util.FileUtil;
 import org.slf4j.Logger;
@@ -16,16 +17,34 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
+import javax.annotation.PostConstruct;
+
 @Service
 public class EtymologyReader {
 
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(EtymologyReader.class);
+
+	@Autowired
+	AmericanHeritage americanHeritage;
+	@Autowired
+	OxfordDictionary oxfordDictionary;
+	@Autowired
+	WebsterDictionary websterDictionary;
+	@Autowired
+	GDictionary gDictOriginReader;
+	@Autowired
+	LexicoDictionary lexicoDictionary;
 
 	Gson gson=new Gson();
 	@Autowired
 	@Qualifier("originWordsCollection")
 	NitriteCollection nitriteCollection;
+
+	@PostConstruct
+	public void init(){
+
+	}
+
 
 	public void readOrigins() {
 		Optional<String> readFileAsString = FileUtil.readFileAsString(FileUtil.DIR+"nonRoots.json");
@@ -37,33 +56,21 @@ public class EtymologyReader {
     	    LinkedBlockingQueue<String> queue=new LinkedBlockingQueue<String>();
     	    Arrays.asList(words).stream().forEach(w-> queue.add(w));
     	    ExecutorService executorService=Executors.newFixedThreadPool(5);
-
-    	    AmericanHeritage americanHeritage=new AmericanHeritage();
     	    americanHeritage.queue=queue;
 			americanHeritage.nitriteCollection=nitriteCollection;
-
-    	    LexicoDictionary lexico=new LexicoDictionary();
-    	    lexico.queue=queue;
-			lexico.nitriteCollection=nitriteCollection;
-
-    	    OxfordDictionary oxfordDictionary=new OxfordDictionary();
+			lexicoDictionary.queue=queue;
+			lexicoDictionary.nitriteCollection=nitriteCollection;
     	    oxfordDictionary.queue=queue;
 			oxfordDictionary.nitriteCollection=nitriteCollection;
-
-    	    WebsterDictionary websterDictionary=new WebsterDictionary();
     	    websterDictionary.queue=queue;
 			websterDictionary.nitriteCollection=nitriteCollection;
-
-			GDictionary gDictOriginReader=new GDictionary();
 			gDictOriginReader.queue=queue;
 			gDictOriginReader.nitriteCollection=nitriteCollection;
-
     	    executorService.submit(americanHeritage);
-    	    executorService.submit(lexico);
+    	    executorService.submit(lexicoDictionary);
     	    executorService.submit(oxfordDictionary);
     	    executorService.submit(websterDictionary);
 			executorService.submit(gDictOriginReader);
-
     	    executorService.shutdown();
     	   while(!executorService.isTerminated()) {
     		   try {
@@ -74,7 +81,30 @@ public class EtymologyReader {
 			}
     	   }
     	});
-		
+	}
+
+
+	public Map<String,String> readOrigins(List<String> wordsList){
+         Map<String,String> origins=new HashMap<>();
+         wordsList.stream().forEach(w->{
+			 String origin = gDictOriginReader.getOrigin(w);
+			 if(StringUtils.isBlank(origin)){
+				 origin = americanHeritage.getOrigin(w);
+			 }
+			 if(StringUtils.isBlank(origin)){
+				 origin = oxfordDictionary.getOrigin(w);
+			 }
+			 if(StringUtils.isBlank(origin)){
+				 origin = websterDictionary.getOrigin(w);
+			 }
+
+			 if(StringUtils.isBlank(origin)){
+				 origin = lexicoDictionary.getOrigin(w);
+			 }
+			 origins.put(w,origin);
+			 nitriteCollection.insert(Document.createDocument("key",w).put("origin",origin));
+		 });
+		return  origins;
 	}
 
 }

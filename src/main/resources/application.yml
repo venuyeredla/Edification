@@ -1,3 +1,4 @@
-spring:
-  main:
-    web-application-type: none
+server:
+  port: 2020
+  servlet:
+    context-path: /english

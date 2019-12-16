@@ -1,19 +1,6 @@
 package org.learn.english.solr;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -23,15 +10,18 @@ import org.apache.solr.common.SolrInputDocument;
 import org.learn.english.models.GWord;
 import org.learn.english.models.Word;
 import org.learn.english.repositories.EnglishRepository;
+import org.learn.english.repositories.OriginReposiotry;
 import org.learn.english.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DictionaryIndexer {
@@ -46,7 +36,11 @@ public class DictionaryIndexer {
 	@Autowired
 	EnglishRepository englishRepository;
 
-	Gson gson=new Gson();
+	@Autowired
+	OriginReposiotry originReposiotry;
+
+	@Autowired
+	Gson gson;
 
 	public void indexDictionary(List<Word> words){
 		try {
@@ -78,11 +72,32 @@ public class DictionaryIndexer {
 			LOGGER.info("Writing last set of docs -- {}",docs.size());
 			httpSolrClient.add(docs);
 			httpSolrClient.commit();
-			httpSolrClient.close();
+			//httpSolrClient.close();
 		}catch (Exception e){
            e.printStackTrace();
 		}
 	}
+
+	public List<String> getWords(String queryTerm){
+		try {
+			SolrQuery solrQuery=new SolrQuery();
+			solrQuery.setQuery(queryTerm);
+			solrQuery.setFilterQueries("type:Dictionary");
+			solrQuery.setFields("word");
+			solrQuery.setRows(102217);
+			QueryResponse response = httpSolrClient.query(solrQuery);
+			List<String> wordsList = response.getResults().stream().map(doc -> {
+				String word = (String) doc.getFirstValue("word");
+				return word;
+			}).collect(Collectors.toList());
+		//	httpSolrClient.close();
+			return wordsList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+	}
+
 
 	public void exportDictionary(){
 		try {
@@ -124,7 +139,7 @@ public class DictionaryIndexer {
 		try {
 			Optional<String> webSterData = FileUtil.readFileAsString(FileUtil.DIR+"Latest\\VenuDict.json");
 			if(webSterData.isPresent()){
-				Map<String, String> orginMap = englishRepository.getOrigins();
+				Map<String, String> orginMap = originReposiotry.getOrigins();
 				System.out.println("New Origin map size : "+orginMap.size());
 				Word[] words = gson.fromJson(webSterData.get(), Word[].class);
 				List<Word> wordsList = Arrays.asList(words).stream().map(word -> {
@@ -168,7 +183,7 @@ public class DictionaryIndexer {
 	            System.out.println("size "+count);
 	           // Files.writeFile(gson.toJson(originMap),new File(FileUtil.DIR + "origins.json"));
 	        }
-		  originMap.putAll(englishRepository.getOrigins());
+		  originMap.putAll(originReposiotry.getOrigins());
 		  System.out.println("After DB load :: "+originMap.size());
 		  return originMap;
 	}
@@ -205,61 +220,5 @@ public class DictionaryIndexer {
 			}
 
 		});
-	}
-
-	public void readANTextFile() throws IOException {
-		List<String> lines = Files.lines(Paths.get(FileUtil.DIR + "AntSyn.txt")).collect(Collectors.toList());
-        List<Word> words=new ArrayList<>();
-		String[] linesArray = lines.toArray(new String[lines.size()]);
-		Word word=null;
-		for(int i=0;i<lines.size();){
-			String line=linesArray[i];
-			if(line.contains("KEY:")){
-				word=new Word();
-				word.setWord(this.cleanWord(line.replace("KEY:","")));
-
-				line=linesArray[++i];
-				String synonym=null;
-				if(line.contains("SYN:")){
-					synonym=line.replace("SYN:","");
-					line=linesArray[++i];
-					while(!line.contains("ANT:")&& !StringUtils.isBlank(line)){
-						synonym=synonym+line;
-						line=linesArray[++i];
-					}
-				}
-				String antonym=null;
-				if(line.contains("ANT:")){
-					 antonym=line.replace("ANT:","");
-					if(i<lines.size()-1){
-						line=linesArray[++i];
-						while(!StringUtils.isEmpty(line)){
-							antonym=antonym+line;
-							line=linesArray[++i];
-						}
-					}
-				}
-
-                if(Objects.nonNull(synonym)){
-					word.setSyn(Arrays.asList(synonym.split(",")).stream().map(str-> this.cleanWord(str)).collect(Collectors.toList()));
-				}
-
-				if(Objects.nonNull(antonym)){
-					word.setAnt(Arrays.asList(antonym.split(",")).stream().map(str->this.cleanWord(str)).collect(Collectors.toList()));
-				}
-
-
-				words.add(word);
-
-			}
-				i++;
-		}
-		System.out.println("Words size : :: "+words.size());
-		FileUtil.writeData(gson.toJson(words), FileUtil.DIR+"Dicts\\newAntsSyns.json");
-	}
-
-	private  String cleanWord(String str){
-	       str=str.replace(".","").trim();
-			return  str;
 	}
 }

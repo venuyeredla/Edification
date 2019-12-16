@@ -10,7 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class EnglishApplication implements CommandLineRunner {
+public class EnglishApplication /*implements CommandLineRunner*/ {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EnglishApplication.class);
 
@@ -22,10 +22,10 @@ public class EnglishApplication implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(EnglishApplication.class, args);
 	}
-	@Override
+	/*@Override
 	public void run(String... args) throws Exception {
 		LOGGER.info("Missing origin : {} -- {}","venu","origin");
 	//	googleDictionaryReader.exportGoogleDict();
 		etymologyReader.readOrigins();
-	}
+	}*/
 }

@@ -7,13 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.*;
 
-@Service
+@Component
 public class GDictionary extends DictionaryReaderBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GDictionary.class);
@@ -26,16 +27,16 @@ public class GDictionary extends DictionaryReaderBase {
     @Override
     public String getOrigin(String word) {
         try {
+            String origin=null;
             ResponseEntity<GWord[]> forEntity = restTemplate.getForEntity(URL+word, GWord[].class);
             if(Objects.equals(forEntity.getStatusCode(), HttpStatus.OK)){
                 List<GWord> words = Arrays.asList(forEntity.getBody());
-                String origin=null;
                 if(Objects.nonNull(words) && words.size()>0){
                   origin= words.get(0).getOrigin();
                 }
                 LOGGER.info("GDictOriginReader :: {} -> {} ",word,origin);
             }
-            return null;
+            return origin;
         } catch (Exception e) {
             LOGGER.error("GDictOriginReader :: {}",word);
         }

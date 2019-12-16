@@ -1,6 +1,7 @@
 package org.learn.english.config;
 
 
+import com.google.gson.Gson;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.NitriteCollection;
@@ -19,6 +20,12 @@ public class EnglishConfig {
     public HttpSolrClient httpSolrClient(){
         HttpSolrClient httpSolrClient=new HttpSolrClient.Builder("http://localhost:8983/solr/Dictionary").build();
         return  httpSolrClient;
+    }
+
+    @Bean
+    public Gson gson(){
+        Gson gson=new Gson();
+        return gson;
     }
 
     @Bean
@@ -46,5 +53,4 @@ public class EnglishConfig {
         NitriteCollection collection = nitriteDB.getCollection("stopwords");
         return collection;
     }
-
 }

@@ -21,9 +21,16 @@ public class DictionaryIndexerTest {
    private DictionaryIndexer dictionaryIndexer;
 
 	@Test
+	@Ignore
 	public void testEnglishDictIndexing() {
 		List<Word> dictionaryData = dictionaryIndexer.loadDictionary();
 		dictionaryIndexer.indexDictionary(dictionaryData);
+	}
+
+	@Test
+	public void testGetWords(){
+		List<String> words = dictionaryIndexer.getWords("gress");
+		words.stream().forEach(System.out::println);
 	}
 
 	@Test
