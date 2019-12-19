@@ -16,6 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<NlpPath>C:/work/Jars/corrnlp/stanford-english-corenlp-models-current.jar</NlpPath>
 	</properties>
 
 	<dependencies>
@@ -48,9 +49,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>edu.uci.ics</groupId>
+			<artifactId>crawler4j</artifactId>
+			<version>4.4.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>edu.stanford.nlp</groupId>
 			<artifactId>stanford-corenlp-model</artifactId>
-			<systemPath>C:/work/Jars/corrnlp/stanford-english-corenlp-models-current.jar</systemPath>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${NlpPath}</systemPath>
 
 		</dependency>
 

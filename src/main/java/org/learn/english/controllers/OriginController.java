@@ -46,7 +46,6 @@ public class OriginController {
         });
     }
 
-
     @GetMapping(value = "delete")
     public String deletingExistingOrigins(){
         originReposiotry.deleteAll();;

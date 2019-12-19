@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Scanner;
+import java.util.Set;
+
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes= {EnglishTestConfig.class})
 public class StanfordNlpTest {
@@ -20,13 +23,11 @@ public class StanfordNlpTest {
         // stanfordNLPUtil.posTagging("C:\\Work\\Books\\Vocabulary\\PrideAndPrejudice.txt");
         //stanfordNLPUtil.listUnknown("C:\\Work\\Books\\Vocabulary\\PrideAndPrejudice.txt");
         stanfordNLPUtil.getLemmas();
-
     }
 
     @Test
     public void tokenizeText(){
-        stanfordNLPUtil.tokenizeText();
-
+        stanfordNLPUtil.buildStopWords();
     }
 
 

@@ -5,6 +5,7 @@ import org.learn.english.models.GWord;
 import org.learn.english.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,8 @@ public class GDictionary extends DictionaryReaderBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(GDictionary.class);
 
     RestTemplate restTemplate=new RestTemplate();
-    Gson gson=new Gson();
+    @Autowired
+    Gson gson;
     Integer fileSuffix=new Integer(0);
     static String URL="https://googledictionaryapi.eu-gb.mybluemix.net/?lang=en&define=";
 

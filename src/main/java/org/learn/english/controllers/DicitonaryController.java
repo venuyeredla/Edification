@@ -17,7 +17,6 @@ import java.util.Map;
 @RequestMapping("/dictionary")
 public class DicitonaryController {
 
-
     @Autowired
     DictionaryIndexer dictionaryIndexer;
 

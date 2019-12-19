@@ -51,21 +51,50 @@ public class StanfordNLPUtil {
 
     @Autowired
     StopWordsRepository stopWordsRepository;
-
     Gson gson=new Gson();
 
-    public void tokenizeText(){
+    public void buildStopWords(){
+        Set<String> unKnown=new HashSet<>();
+        Set<String> stopWords = stopWordsRepository.getStopWords();
+        Set<String> newstopWords = stopWordsRepository.getStopWords();
+        Set<String> tokenizedTextList = this.getTokenizedTextList(stopWords);
+        Scanner scanner = new Scanner(System.in);
+        for(String token: tokenizedTextList)
+        {
+            System.out.println(token+" ?  =  ");
+            String option = scanner.nextLine();
+            if(option.equals("4")){
+                break;
+            }
+            switch (option){
+                case "1":
+                    newstopWords.add(token);
+                    break;
+                case "2":
+                    unKnown.add(token);
+                    break;
+                case "3":
+                    break;
+             }
+        }
+        stopWordsRepository.saveAllStopWords(newstopWords);
+        FileUtil.writeData(gson.toJson(unKnown),FileUtil.DIR+"unknown.json");
+        System.out.println("Written unknown and stop words ::");
+    }
+
+
+    public  Set<String>  getTokenizedTextList(Set<String> stopWords){
+        Set<String> tokens=new HashSet<>();
         try {
             // set up pipeline properties
             Properties props = new Properties();
             props.setProperty("annotators", "tokenize,ssplit");
             // set up pipeline
             StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-            Set<String> tokens=new HashSet<>();
             System.out.println("---");
             System.out.println("Accessing Tokens In A CoreDocument");
             System.out.println("(text, char offset begin, char offset end)");
-            Set<String> stopWords = stopWordsRepository.getStopWords();
+
             Files.list(Paths.get(FileUtil.DIR + "twoAndHalf")).forEach(path->{
                 String fileName = path.toFile().getAbsolutePath();
                 System.out.println("Reading file"+fileName);
@@ -110,6 +139,7 @@ public class StanfordNLPUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return tokens;
     }
 
 
