@@ -1,0 +1,12 @@
+{
+    "/solr/*": {
+        "target": "http://localhost:8983",
+        "secure": false,
+        "logLevel": "debug"
+    },
+    "/edification/api/*": {
+        "target": "http://localhost:2020",
+        "secure": false,
+        "logLevel": "debug"
+    }
+}

@@ -1,0 +1,21 @@
+.card
+{
+    margin: 5px;
+}
+.mat-card {
+    background: slategray;
+}
+
+.chip {
+    display: inline-block;
+    padding: 3px 10px;
+    height: 22px;
+    font-size: 15px;
+    border-radius: 20px;
+    background-color:whitesmoke;
+    margin: 3px;
+  }
+
+  textarea:focus, button:focus{
+    outline: none;
+}

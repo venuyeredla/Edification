@@ -1,0 +1,56 @@
+<div style="padding: 10px;"> 
+     <div style="width: 45%; float: left;">
+        <mat-card class="results-card">
+                <mat-card-header>
+                  <mat-card-title class="chip"> Review Words.</mat-card-title>
+                  <mat-card-subtitle>Review words</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                        <h3 class="chip" (click)="goToKnown()">Go to known</h3>
+                        <h3 class="chip" (click)="loadFromFile()">Import</h3>
+                        <h3 class="chip" (click)="writeToFile()">Export</h3>
+                        <h3 class="chip">Index</h3>
+                </mat-card-content>
+              </mat-card>
+              <mat-card class="results-card">
+                    <mat-card-header>
+                      <mat-card-title> Manage Dictionary</mat-card-title>
+                      <mat-card-subtitle>Review words</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <h3 class="chip" (click)="getDefinition()">Define URL </h3>
+                       <h3 class="chip" (click)="importDictionary()">Import</h3>
+                       <h3 class="chip" (click)="exportDictionary()">Export</h3>
+                       <h3 class="chip" (click)="indexDictionary()">Index Dictionary </h3>
+                       <h3 class="chip" (click)="indexClauses()">Index Caluses </h3>
+                       <h3 class="chip" (click)="dictionarySize()">Dictionary size </h3>
+                    </mat-card-content>
+                  </mat-card>
+     </div>
+        <div style="width: 45%;float: right;">
+          <mat-card class="results-card">
+                              <mat-card-header>
+                                <mat-card-title> Manage Dictionary</mat-card-title>
+                                <mat-card-subtitle>Review words</mat-card-subtitle>
+                              </mat-card-header>
+                              <mat-card-content>
+                            <div style="font-size: small;">   
+                               <div class="chip" (click)="getNewWords()"><i> Get New</i></div>
+                                      <div style="padding-left: 100px; width: 50%;height: 700px;overflow: auto;">
+                                          <h3 *ngFor="let neword of newWords;let i = index">
+                                              {{neword}}
+                                              <button (click)="addKnown(i)">Know</button>
+                                          </h3>
+                                      </div>
+                                  <!--   <div style="width: 70%;float: right;">
+                                          <h1>Known words</h1>
+                                          <i *ngFor="let knownWord of knownWords;">{{knownWord}} &nbsp;&nbsp; &nbsp;</i> 
+                                      </div>
+                                    -->  
+                           </div>
+
+                              </mat-card-content>
+                  </mat-card>
+        </div>
+       
+</div>

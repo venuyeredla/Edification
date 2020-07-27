@@ -1,0 +1,13 @@
+<div style="width: 50%;float: left;">
+    <div style="height: 850px;overflow: auto;" id="readerContainer">
+        <mat-card class="card" *ngFor="let sentence of sentences;">{{sentence}}</mat-card>
+        <div style="height: 100px;"></div>
+    </div>
+    <div>
+        <span> {{indexNum}} of : {{totalLIne}}</span>
+        <span><strong style="float: right;"><button class="chip"  (click)="nextSentence()"> Next</button></strong></span>
+    </div>
+</div>
+<div style="width: 50%;float: right;height: 900px;overflow: auto;">
+    <app-search></app-search>
+</div>

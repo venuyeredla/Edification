@@ -1,0 +1,103 @@
+<div id="search-page">
+  <div style="width: 60%;float: left;">
+    <div class="search-div">
+      <form class="search-form" (submit)="newSearch()">
+        <input class="search-box" placeholder="Search" name="queryTerm" value="" [(ngModel)]="solrQuery.query">
+        <!-- <button mat-button (click)="searchSolr()">Search</button> -->
+      </form>
+    </div>
+    <div class="response" *ngIf="solrResponse.dictWords">
+      <div class="facets-area">
+        <div class="facets-enteries" *ngIf="solrResponse.facets">
+          <h4 *ngFor="let facet of solrResponse.facets; let num = index">
+            <i (click)="applyFilter(facet)">{{facet.label}}({{facet.count}})</i>
+          </h4>
+        </div>
+        <!-- <div class="facets-enteries">
+                  <h2>Roots</h2>
+                </div>
+                <div class="facets-enteries">
+                  <h2>Prefixes</h2>
+                </div>
+                <div class="facets-enteries">
+                  <h2>Sufixes</h2>
+                </div> -->
+      </div>
+      <div class="results-area">
+        <mat-card class="results-card" *ngFor="let doc of solrResponse.dictWords; let num = index">
+          <div *ngIf="doc.type=='Dictionary'">
+            <mat-card-header>
+              <mat-card-title>{{num+1}}. {{doc.word | titlecase}}</mat-card-title>
+              <mat-card-subtitle *ngIf="doc.origin" class="results-card-subtitle">{{doc.origin}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div *ngIf="doc.meanings" style="padding-left: 20px;">
+                <i class="caption"> Meanings:</i>
+                <div style="padding-left: 15px;" *ngFor="let meaning of doc.meanings;let meannum = index">
+                  <div *ngFor="let def of meaning.definitions;let defnum = index">
+                    {{def.definition}} <sub>{{meaning.pos}}</sub>
+                    <div class="defintion">
+                      <p style="margin: 0px;"><span class="caption">Ex.</span> {{def.example}}</p>
+                      <div *ngIf="def.synonyms">
+                        <i class="caption"> Syn. </i>
+                        <div class="synonym-chip" *ngFor="let synonym of def.synonyms; let synindex=index">
+                          <i (click)="onChooseTheWord(synonym)">{{synonym}}</i>
+                        </div>
+                      </div>
+                      <div *ngIf="def.antonyms">
+                        <i class="caption"> Ant. </i>
+                        <div class="synonym-chip" *ngFor="let antonym of def.antonyms; let antnum=index">
+                          <i (click)="onChooseTheWord(antonym)">{{antonym}}</i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <i class="chip" (click)="editWord(doc)">Edit</i>
+                <i *ngIf="!doc.isfull" class="chip" (click)="readDef(doc)">Get Def</i>
+                <i *ngIf="!doc.isknown" class="chip" (click)="editWord(doc)">know?</i>
+                <i class="chip" (click)="editWord(doc)">Rate</i>
+              </div>
+            </mat-card-content>
+          </div>
+
+          <div *ngIf="doc.type!='Dictionary'">
+            <mat-card-header>
+              <mat-card-title>{{num+1}}. {{doc.word}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div *ngIf="doc.means" style="padding-left: 20px;">
+                <i class="caption"> Meanings.</i>
+                <div style="padding-left: 15px;" *ngFor="let meaning of doc.means;let meannum = index">
+                  {{meaning}}
+                </div>
+                <i class="caption"> Ex.</i>
+                <div style="padding-left: 15px;" *ngFor="let example of doc.examples;let meannum = index">
+                  {{example}}
+                </div>
+              </div>
+              <div class="actions">
+                <i class="chip" (click)="editWord(doc)">Edit</i>
+                <i class="chip" (click)="editWord(doc)">know?</i>
+                <i class="chip" (click)="editWord(doc)">Rate</i>
+              </div>
+            </mat-card-content>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+    <div *ngIf="!solrResponse.dictWords">
+      <div> Did you mean?</div>
+    </div>
+  </div>
+  <div style="width: 38%; float: left;">
+    <h3>To Read</h3>
+    <div class="chip" *ngFor="let newword of toRead; let synnum=index">
+      <i (click)="onChooseTheWord(newword)">{{newword}}</i>
+    </div>
+  </div>
+</div>

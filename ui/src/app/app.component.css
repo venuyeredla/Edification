@@ -1,0 +1,22 @@
+.position-fixed{
+    position: fixed
+  }
+
+  .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color:whitesmoke;
+    height: 50px;
+    padding-top: 10px;
+    color: white;
+    text-align: center;
+    border-radius: 15px;
+ }
+
+ .footer a{
+    padding-left: 15px;
+    padding-right: 15px ;
+ }
+
