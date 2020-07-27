@@ -2,7 +2,6 @@ HELP.md
 target/
 logs/
 data/
-/*/ui/node_modules/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
