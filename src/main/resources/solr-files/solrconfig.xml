@@ -797,7 +797,7 @@
 
   <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,/browse">
     <lst name="defaults">
-      <str name="df">word</str>
+      <str name="df">websterWord</str>
       <str name="q.op">AND</str>
     </lst>
   </initParams>
@@ -812,7 +812,7 @@
                   class="solr.extraction.ExtractingRequestHandler" >
     <lst name="defaults">
       <str name="lowernames">true</str>
-      <str name="fmap.content">word</str>
+      <str name="fmap.content">websterWord</str>
     </lst>
   </requestHandler>
 
@@ -877,7 +877,7 @@
     <!-- a spellchecker built from a field of the main index -->
     <lst name="spellchecker">
       <str name="name">default</str>
-      <str name="field">word</str>
+      <str name="field">websterWord</str>
       <str name="classname">solr.DirectSolrSpellChecker</str>
       <!-- the spellcheck distance measure used, the default is the internal levenshtein -->
       <str name="distanceMeasure">internal</str>
@@ -898,7 +898,7 @@
       -->
     </lst>
 
-    <!-- a spellchecker that can break or combine words.  See "/spell" handler below for usage -->
+    <!-- a spellchecker that can break or combine websterWords.  See "/spell" handler below for usage -->
     <!--
     <lst name="spellchecker">
       <str name="name">wordbreak</str>
